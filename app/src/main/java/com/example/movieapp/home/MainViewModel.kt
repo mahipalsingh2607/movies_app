@@ -34,9 +34,13 @@ class MainViewModel : ViewModel(){
 
                 override fun onNext(t: Response<ResponseBody>) {
                     progressVisible.set(false)
-                    val res = Gson().fromJson(t.body()!!.string(), MoviesResponse::class.java)
-                    res.search?.let {
-                        movieList.postValue(res.search)
+                    try {
+                        val res = Gson().fromJson(t.body()!!.string(), MoviesResponse::class.java)
+                        res.search?.let {
+                            movieList.postValue(res.search)
+                        }
+                    } catch (e : Exception){
+                        e.printStackTrace()
                     }
 
                 }
