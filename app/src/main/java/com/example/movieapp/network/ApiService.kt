@@ -15,4 +15,10 @@ interface ApiService {
         @Query("page") page: Int
     ): Observable<Response<ResponseBody>>
 
+    @GET("/")
+    fun getMovieDetails(
+        @Query("apikey") apikey: String,
+        @Query("i") i: String
+    ): Observable<Response<ResponseBody>>
+
 }

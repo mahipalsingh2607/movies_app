@@ -1,11 +1,10 @@
-package com.example.movieapp.home
+package com.example.movieapp.moviedetails
 
 import android.util.Log
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.movieapp.model.MoviesResponse
-import com.example.movieapp.model.SearchItem
+import com.example.movieapp.model.MovieDetailsResponse
 import com.example.movieapp.network.ApiClient
 import com.google.gson.Gson
 import io.reactivex.Observer
@@ -15,14 +14,13 @@ import io.reactivex.schedulers.Schedulers
 import okhttp3.ResponseBody
 import retrofit2.Response
 
-class MainViewModel : ViewModel(){
+class MovieDetailsViewModel : ViewModel(){
 
-    private val movieList = MutableLiveData<ArrayList<SearchItem?>?>()
-    var page = 1
+    private val movieDetails = MutableLiveData<MovieDetailsResponse?>()
     var progressVisible = ObservableField(false)
-    fun getMovies(search : String){
+    fun getMovieDetails(id : String){
         progressVisible.set(true)
-        val response = ApiClient.apiService.getMovies("37e309d2",search,"movie", page)
+        val response = ApiClient.apiService.getMovieDetails("37e309d2",id)
         response.observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .subscribe(object : Observer<Response<ResponseBody>> {
@@ -35,9 +33,9 @@ class MainViewModel : ViewModel(){
                 override fun onNext(t: Response<ResponseBody>) {
                     progressVisible.set(false)
                     try {
-                        val res = Gson().fromJson(t.body()!!.string(), MoviesResponse::class.java)
-                        res.search?.let {
-                            movieList.postValue(res.search)
+                        val res = Gson().fromJson(t.body()!!.string(), MovieDetailsResponse::class.java)
+                        res?.let {
+                            movieDetails.postValue(it)
                         }
                     } catch (e : Exception){
                         e.printStackTrace()
@@ -49,7 +47,7 @@ class MainViewModel : ViewModel(){
                 override fun onError(e: Throwable) {
                     progressVisible.set(false)
                     Log.i("onError", e.toString())
-                    movieList.postValue(null)
+                    movieDetails.postValue(null)
 
                 }
 
@@ -62,7 +60,7 @@ class MainViewModel : ViewModel(){
             })
     }
 
-    fun getMovieData(): MutableLiveData<ArrayList<SearchItem?>?> {
-        return movieList
+    fun getMovieData(): MutableLiveData<MovieDetailsResponse?> {
+        return movieDetails
     }
 }

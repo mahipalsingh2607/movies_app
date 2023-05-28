@@ -63,32 +63,6 @@ class MainActivity : ComponentActivity(),MoviesAdapter.onClick {
                 }
             }
         })
-//        binding.rvMovies.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-//            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-//                super.onScrolled(recyclerView, dx, dy)
-//
-//                val layoutManager = binding.rvMovies.layoutManager
-//                if (layoutManager is GridLayoutManager) {
-//                    val visibleItemCount = layoutManager.childCount
-//                    val totalItemCount = layoutManager.itemCount
-//                    val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-//
-//                    // Calculate the last visible item position based on span count
-//                    val spanCount = layoutManager.spanCount
-//                    val lastVisibleItemPosition = firstVisibleItemPosition + visibleItemCount
-//                    val isLastRowVisible = lastVisibleItemPosition >= totalItemCount - spanCount
-//
-//                    // Check if the last row is visible
-//                    if (isLastRowVisible) {
-//                        // Call function A() when RecyclerView is scrolled to the end
-//                        viewmodel?.let {
-//                            it.page++
-//                            it.getMovies(binding.etSearchMovie.text.toString())
-//                        }
-//                    }
-//                }
-//            }
-//        })
     }
 
     fun subscribeToRepoData() {
