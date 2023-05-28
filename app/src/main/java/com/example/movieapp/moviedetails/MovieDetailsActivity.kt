@@ -46,10 +46,14 @@ class MovieDetailsActivity : ComponentActivity() {
 
     private fun initViews() {
         movieData?.apply {
-            Glide.with(this@MovieDetailsActivity)
-                .load(poster)
-                .into(binding.ivMovie)
-            viewmodel?.getMovieDetails(imdbID?: "")
+            if(poster?.endsWith(".jpg") == true) {
+                Glide.with(this@MovieDetailsActivity)
+                    .load(poster)
+                    .into(binding.ivMovie)
+            }
+            kotlinx.coroutines.runBlocking {
+                viewmodel?.getMovieDetails(imdbID ?: "")
+            }
 
         }
     }

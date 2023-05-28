@@ -22,11 +22,9 @@ import android.widget.Toast
 import android.R.string.no
 
 
-
-
-class MainActivity : ComponentActivity(),MoviesAdapter.onClick {
+class MainActivity : ComponentActivity(), MoviesAdapter.onClick {
     var viewmodel: MainViewModel? = null
-    var gitRepoAdapter : MoviesAdapter? = null
+    var gitRepoAdapter: MoviesAdapter? = null
     val mMoviesList = ArrayList<SearchItem?>()
     lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +32,9 @@ class MainActivity : ComponentActivity(),MoviesAdapter.onClick {
         viewmodel = ViewModelProvider(this).get(MainViewModel::class.java)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.viewModel = viewmodel
-        viewmodel?.getMovies("Marvel")
+        kotlinx.coroutines.runBlocking {
+            viewmodel?.getMovies("Marvel")
+        }
         subscribeToRepoData()
         val textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -45,9 +45,11 @@ class MainActivity : ComponentActivity(),MoviesAdapter.onClick {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                viewmodel?.let{ viewmodel ->
+                viewmodel?.let { viewmodel ->
                     viewmodel.page = 1
-                    viewmodel.getMovies(s.toString())
+                    kotlinx.coroutines.runBlocking {
+                        viewmodel.getMovies(s.toString())
+                    }
                 }
             }
         }
@@ -58,7 +60,9 @@ class MainActivity : ComponentActivity(),MoviesAdapter.onClick {
                 if (!binding.rvMovies.canScrollVertically(1)) {
                     viewmodel?.let {
                         it.page++
-                        it.getMovies(binding.etSearchMovie.text.toString())
+                        kotlinx.coroutines.runBlocking {
+                            it.getMovies(binding.etSearchMovie.text.toString())
+                        }
                     }
                 }
             }
@@ -70,7 +74,12 @@ class MainActivity : ComponentActivity(),MoviesAdapter.onClick {
             MoviesAdapter(mMoviesList, this@MainActivity)
         binding.rvMovies.adapter = gitRepoAdapter
         binding.rvMovies.addItemDecoration(object : RecyclerView.ItemDecoration() {
-            override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+            override fun getItemOffsets(
+                outRect: Rect,
+                view: View,
+                parent: RecyclerView,
+                state: RecyclerView.State
+            ) {
                 outRect.top = 10
             }
 
@@ -91,7 +100,7 @@ class MainActivity : ComponentActivity(),MoviesAdapter.onClick {
                     } else {
                         mMoviesList.addAll(list)
                         gitRepoAdapter?.let {
-                            it.notifyItemRangeInserted(viewmodel.page*10,10)
+                            it.notifyItemRangeInserted(mMoviesList.size - list.size, 10)
                         }
                     }
                 }
@@ -100,13 +109,11 @@ class MainActivity : ComponentActivity(),MoviesAdapter.onClick {
     }
 
     override fun onMovieClick(repo: SearchItem) {
-        val movieDetailsIntent = Intent(this,MovieDetailsActivity::class.java)
-        movieDetailsIntent.putExtra("movieData",repo)
+        val movieDetailsIntent = Intent(this, MovieDetailsActivity::class.java)
+        movieDetailsIntent.putExtra("movieData", repo)
         startActivity(movieDetailsIntent)
 
     }
-
-
 
 
 }
