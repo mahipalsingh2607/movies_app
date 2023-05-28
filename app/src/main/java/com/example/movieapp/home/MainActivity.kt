@@ -17,6 +17,12 @@ import androidx.lifecycle.Observer
 import android.text.TextWatcher
 import android.text.Editable
 import androidx.recyclerview.widget.GridLayoutManager
+import android.widget.Toast
+
+import android.R.string.no
+
+
+
 
 class MainActivity : ComponentActivity(),MoviesAdapter.onClick {
     var viewmodel: MainViewModel? = null
@@ -27,7 +33,8 @@ class MainActivity : ComponentActivity(),MoviesAdapter.onClick {
         super.onCreate(savedInstanceState)
         viewmodel = ViewModelProvider(this).get(MainViewModel::class.java)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        binding.etSearchMovie.requestFocus()
+        binding.viewModel = viewmodel
+        viewmodel?.getMovies("Marvel")
         subscribeToRepoData()
         val textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -48,29 +55,40 @@ class MainActivity : ComponentActivity(),MoviesAdapter.onClick {
         binding.rvMovies.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-
-                val layoutManager = binding.rvMovies.layoutManager
-                if (layoutManager is GridLayoutManager) {
-                    val visibleItemCount = layoutManager.childCount
-                    val totalItemCount = layoutManager.itemCount
-                    val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-
-                    // Calculate the last visible item position based on span count
-                    val spanCount = layoutManager.spanCount
-                    val lastVisibleItemPosition = firstVisibleItemPosition + visibleItemCount
-                    val isLastRowVisible = lastVisibleItemPosition >= totalItemCount - spanCount
-
-                    // Check if the last row is visible
-                    if (isLastRowVisible) {
-                        // Call function A() when RecyclerView is scrolled to the end
-                        viewmodel?.let {
-                            it.page++
-                            it.getMovies(binding.etSearchMovie.text.toString())
-                        }
+                if (!binding.rvMovies.canScrollVertically(1)) {
+                    viewmodel?.let {
+                        it.page++
+                        it.getMovies(binding.etSearchMovie.text.toString())
                     }
                 }
             }
         })
+//        binding.rvMovies.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+//            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+//                super.onScrolled(recyclerView, dx, dy)
+//
+//                val layoutManager = binding.rvMovies.layoutManager
+//                if (layoutManager is GridLayoutManager) {
+//                    val visibleItemCount = layoutManager.childCount
+//                    val totalItemCount = layoutManager.itemCount
+//                    val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+//
+//                    // Calculate the last visible item position based on span count
+//                    val spanCount = layoutManager.spanCount
+//                    val lastVisibleItemPosition = firstVisibleItemPosition + visibleItemCount
+//                    val isLastRowVisible = lastVisibleItemPosition >= totalItemCount - spanCount
+//
+//                    // Check if the last row is visible
+//                    if (isLastRowVisible) {
+//                        // Call function A() when RecyclerView is scrolled to the end
+//                        viewmodel?.let {
+//                            it.page++
+//                            it.getMovies(binding.etSearchMovie.text.toString())
+//                        }
+//                    }
+//                }
+//            }
+//        })
     }
 
     fun subscribeToRepoData() {

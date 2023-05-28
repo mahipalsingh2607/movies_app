@@ -1,6 +1,7 @@
 package com.example.movieapp.home
 
 import android.util.Log
+import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.movieapp.model.MoviesResponse
@@ -18,7 +19,9 @@ class MainViewModel : ViewModel(){
 
     private val movieList = MutableLiveData<ArrayList<SearchItem?>?>()
     var page = 1
+    var progressVisible = ObservableField(false)
     fun getMovies(search : String){
+        progressVisible.set(true)
         val response = ApiClient.apiService.getMovies("b9bd48a6",search,"movie", page)
         response.observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
@@ -30,6 +33,7 @@ class MainViewModel : ViewModel(){
 
 
                 override fun onNext(t: Response<ResponseBody>) {
+                    progressVisible.set(false)
                     val res = Gson().fromJson(t.body()!!.string(), MoviesResponse::class.java)
                     res.search?.let {
                         movieList.postValue(res.search)
@@ -39,12 +43,15 @@ class MainViewModel : ViewModel(){
 
 
                 override fun onError(e: Throwable) {
+                    progressVisible.set(false)
                     Log.i("onError", e.toString())
+                    movieList.postValue(null)
 
                 }
 
 
                 override fun onComplete() {
+                    progressVisible.set(false)
 
                 }
 

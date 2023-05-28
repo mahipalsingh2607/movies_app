@@ -2,7 +2,15 @@
 <layout xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <data></data>
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.movieapp.home.MainViewModel" />
+
+        <variable
+            name="view"
+            type="android.view.View" />
+    </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -26,7 +34,7 @@
         android:drawablePadding="10dp"
         android:ellipsize="end"
         android:gravity="start|center"
-        android:hint="Search Movies..."
+        android:hint="Search Movies... eg. Marvel"
         android:imeOptions="actionSearch"/>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvMovies"
@@ -45,8 +53,45 @@
         tools:listitem="@layout/item_movie"
         android:paddingBottom="20dp"
         tools:itemCount="7"
+        tools:visibility="gone"
         android:clipToPadding="false"
         app:spanCount="2"/>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivSearchMovie"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_movie_search"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etSearchMovie"
+        android:layout_marginTop="30dp"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        app:layout_constraintTop_toBottomOf="@+id/ivSearchMovie"
+        android:id="@+id/tvSearchMovie"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search Movies of your choice..."
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/vgSearchMovie"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="ivSearchMovie,tvSearchMovie"
+        android:visibility="gone" />
+
+    <ProgressBar
+        android:id="@+id/pbProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="@{viewModel.progressVisible ? view.VISIBLE : view.GONE}"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
